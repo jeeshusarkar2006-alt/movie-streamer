@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Movie Streamer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; text-align: center; }
+        h1 { color: #e50914; }
+        .movie-list { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; }
+        a { background: #1f1f1f; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; width: 300px; transition: 0.3s; }
+        a:hover { background: #e50914; }
+        video { width: 100%; max-width: 800px; margin-top: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>My Personal Netflix</h1>
+    <p>Select a movie to watch from anywhere:</p>
+    
+    <div class="movie-list" id="list">Loading movies...</div>
+
+    <div id="player-container"></div>
+
+    <script>
+        fetch('/api/movies')
+            .then(res => res.json())
+            .then(movies => {
+                const listDiv = document.getElementById('list');
+                if(movies.length === 0) {
+                    listDiv.innerHTML = "<p>No movies found in the folder!</p>";
+                    return;
+                }
+                listDiv.innerHTML = '';
+                movies.forEach(movie => {
+                    const btn = document.createElement('a');
+                    btn.href = "#";
+                    btn.innerText = movie;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        document.getElementById('player-container').innerHTML = `
+                            <h3>Now Playing: ${movie}</h3>
+                            <video controls autoplay>
+                                <source src="/watch/${encodeURIComponent(movie)}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                    };
+                    listDiv.appendChild(btn);
+                });
+            });
+    </script>
+</body>
+</html>
